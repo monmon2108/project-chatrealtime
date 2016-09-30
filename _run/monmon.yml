@@ -1,0 +1,4 @@
+dev:
+  docker_compose_files:
+   - main
+
