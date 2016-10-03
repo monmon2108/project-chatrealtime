@@ -1,0 +1,21 @@
+version: "2"
+services:
+  acceptor:
+    image: myquickfix
+    hostname: 'acceptor'
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/src
+    working_dir: /src
+    command: nodemon -L acceptor.coffee
+
+  initiator:
+    image: myquickfix
+    hostname: 'initiator'
+    ports:
+      - 4000:3000
+    volumes:
+      - .:/src
+    working_dir: /src
+    command: nodemon -L initiator.coffee
