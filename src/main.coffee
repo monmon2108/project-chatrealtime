@@ -1,29 +1,39 @@
 Ext.onReady ->
-  Ext.create 'Ext.Panel',
+  Ext.create 'Ext.container.Viewport',
     renderTo: Ext.getBody()
-    title: 'Chat RealTime'
-    frame : true
-    loader:
-      renderer: 'html',
-      url: './index.html'
-      autoLoad: true
-      scripts: true
-    layout :
-      type :'vbox'
-      align: 'stretch'
-    items: [
-      xtype: 'panel'
-      name: 'chat'
-    ,
-      xtype: 'form'
-      layout: 'hbox'
+    layout: 'fit'
+    items:  Ext.create 'Ext.Panel',
+
+      title: 'Chat RealTime'
+      frame : true
+      bodyPadding: 10
+      loader:
+        renderer: 'html',
+        url: './index.html'
+        autoLoad: true
+        scripts: true
+      layout :
+        type :'vbox'
+        align: 'stretch'
       items: [
-        xtype: 'textfield'
-        name: 'message'
+
+        xtype: 'textarea'
+        name: 'chat'
+        flex: 2
       ,
-        xtype: 'button'
-        text: 'Send'
-        handler: (btn) ->
-          console.log 'test'
+        xtype: 'form'
+        layout: 'hbox'
+        items: [
+          xtype: 'textfield'
+          name: 'message'
+          flex: 2
+        ,
+          xtype: 'button'
+          text: 'Send'
+          handler: (btn) ->
+            form = btn.up 'form'
+            msgtxt = form.down '#message'
+            console.log form.getValues()
+
+        ]
       ]
-    ]
