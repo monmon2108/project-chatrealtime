@@ -5,7 +5,11 @@
   "main": "index.js",
   "dependencies": {
     "express": "4.14.0",
-    "coffee-script": "1.11.0" 
+    "coffee-script": "1.11.0" ,
+    "body-parser": "1.15.2",
+    "socket.io": "1.2.0",
+    "lodash": "4.16.2",
+    "async": "2.0.1"
   },
   "devDependencies": {},
   "scripts": {

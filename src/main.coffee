@@ -1,39 +1,48 @@
-Ext.onReady ->
-  Ext.create 'Ext.container.Viewport',
-    renderTo: Ext.getBody()
-    layout: 'fit'
-    items:  Ext.create 'Ext.Panel',
 
-      title: 'Chat RealTime'
-      frame : true
-      bodyPadding: 10
-      loader:
-        renderer: 'html',
-        url: './index.html'
-        autoLoad: true
-        scripts: true
-      layout :
-        type :'vbox'
-        align: 'stretch'
-      items: [
+Ext.define 'Main',
+  extend: "Main_UI"
+  bind: ->
+    # listeners:
+    panel = @
 
-        xtype: 'textarea'
-        name: 'chat'
-        flex: 2
-      ,
-        xtype: 'form'
-        layout: 'hbox'
-        items: [
-          xtype: 'textfield'
-          name: 'message'
-          flex: 2
-        ,
-          xtype: 'button'
-          text: 'Send'
-          handler: (btn) ->
-            form = btn.up 'form'
-            msgtxt = form.down '#message'
-            console.log form.getValues()
+    txtname = panel.down 'textfield[name=name]'
 
-        ]
-      ]
+    txtmsg = panel.down 'textfield[name=message]'
+
+    btn_send = panel.down 'button[name=send]'
+
+    txtarea = panel.down 'textarea[name=chat]'
+
+    socket = io.connect()
+
+    socket.on 'connect', (data) ->
+      txtarea.setValue 'a user connected'
+
+
+    socket.on 'disconnect', (data) ->
+      txtarea.setValue 'a user disconnected'
+      socket.emit 'disconnect',
+        from: txtname.getValue()
+
+
+    socket.on 'bye', (data) ->
+      txtarea.setValue txtarea.getValue() + '\n' + data.from + ' disconnected.'
+
+    socket.on 'message', (data) ->
+      txtarea.setValue txtarea.getValue() + '\n' + data.from + ': ' + data.msg
+
+
+    socket.on 'hi', (data) ->
+      txtarea.setValue txtarea.getValue() + '\n' + data.from + ' connected.'
+
+    txtname.on 'specialkey', (textfield, e) ->
+      if e.keyCode == Ext.event.Event.ENTER
+        socket.emit 'register',
+          from: txtname.getValue()
+
+    btn_send.on 'click', ->
+      txtarea.setValue txtarea.getValue() + '\n' + txtname.getValue() + ': ' + txtmsg.getValue()
+      socket.emit 'chat message',
+        to: 'all'
+        from: txtname.getValue()
+        msg: txtmsg.getValue()
