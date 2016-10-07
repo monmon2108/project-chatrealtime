@@ -3,12 +3,8 @@ services:
   web:
     image: registry.angstrom.co.th:8443/project-chat-realtime-app
     volumes:
-      - ../src:/src
+      - ./src:/src
     ports:
       - 3000:3000
     working_dir: /src
     command: nodemon -L app.coffee
-
-  redis:
-    image: redis
-    
