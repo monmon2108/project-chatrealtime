@@ -1,9 +1,10 @@
 FROM registry.angstrom.co.th:8443/centos7_nodejs:4.4.7
 
 RUN npm install -g coffee-script@1.11.0 nodemon@1.10.2
-RUN npm install --save socket.io 
+RUN npm install --save socket.io
 
 COPY package.json /package.json
 RUN npm install
+
 
 WORKDIR /src

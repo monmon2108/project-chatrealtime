@@ -8,3 +8,6 @@ services:
       - 3000:3000
     working_dir: /src
     command: nodemon -L app.coffee
+
+  redis:
+    image: redis

@@ -17,13 +17,13 @@ Ext.define 'Main',
 
     socket.on 'connect', (data) ->
       txtarea.setValue 'a user connected'
+      panel.setLoading false
 
 
     socket.on 'disconnect', (data) ->
       txtarea.setValue 'a user disconnected'
-      socket.emit 'disconnect',
-        from: txtname.getValue()
-
+      console.log 'disconnect'
+      panel.setLoading true
 
     socket.on 'bye', (data) ->
       txtarea.setValue txtarea.getValue() + '\n' + data.from + ' disconnected.'
