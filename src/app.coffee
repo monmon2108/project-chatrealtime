@@ -11,6 +11,9 @@ clientredis = redis.createClient
 
 
 
+redis = require 'redis'
+rclient = redis.createClient host: 'redis'
+
 app.use body_parser.json()
 app.use body_parser.urlencoded
   extended: true
@@ -44,28 +47,35 @@ app.get '/Main_UI.js', (req, res) ->
 #client connected
 io.on 'connection', (client) ->
 
-  clientredis.set('user:all:connection', 0, redis.print)
+
+  clientredis.set 'user:all:connection', 0, redis.print
   console.log client.id
 
   client.on 'disconnect', (data) ->
-    console.log client.id
-    clientredis.decr('user:all:connection', redis.print)
-    # clientredis.srem "user:all:names", data.from
-    clientredis.smembers "user:all:names", (e, namse)->
-      users = namse
-      async.map namse, (name, done)->
+    console.log 'disconnect...'
+    clientredis.decr 'user:all:connection', redis.print
 
-        key = "user:#{name}:socketids"
-        clientredis.smembers key, (e, ids)->
-          socketids = ids
-          async.map socketids, (socketid, done)->
+    clientredis.smembers 'user:all:names', (e, result) ->
+      users = result
+      async.map users, (user, done) ->
+        console.log user
+        clientredis.smembers "user:#{user}:socketids", (e, result) ->
+          socketids = result
+          async.map socketids, (socketid, done) ->
+            console.log socketid
+
             if client.id == socketid
-              clientredis.srem key, client.id, done
+              clientredis.srem "user:#{user}:socketids", socketid, done
+
+          , () ->
+
 
 
       , ()->
 
-    , ()->
+
+  
+
 
 
   client.on 'bye', (data) ->
@@ -87,6 +97,7 @@ io.on 'connection', (client) ->
     ], (e)->
       console.log e
       console.log arguments
+
 
 
 
