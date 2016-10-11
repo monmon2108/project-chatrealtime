@@ -15,17 +15,28 @@ Ext.define 'Main_UI',
     render: ->
       @bind()
   bind: ->
-  
+
   initComponent: ->
     name = ''
     @items = [
-        xtype: 'textfield'
-        name: 'name'
-        emptyText: 'your name'
+        xtype: 'form'
+        name: 'name_form'
+        layout: 'hbox'
+        items: [
+            xtype: 'textfield'
+            name: 'name'
+            emptyText: 'your name'
+            flex: 2
+          ,
+            xtype: 'button'
+            name: 'submit'
+            text: 'Submit'
+        ]
       ,
         xtype: 'textarea'
         name: 'chat'
         grow: true
+        add_value: (value)-> @setValue @getValue() + '\n' + value
         growAppend : '\n'
         flex: 2
       ,

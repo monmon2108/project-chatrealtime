@@ -9,6 +9,8 @@ Ext.define 'Main',
 
     txtmsg = panel.down 'textfield[name=message]'
 
+    btn_submit = panel.down 'button[name=submit]'
+
     btn_send = panel.down 'button[name=send]'
 
     txtarea = panel.down 'textarea[name=chat]'
@@ -21,30 +23,75 @@ Ext.define 'Main',
 
     socket.on 'disconnect', (data) ->
       txtarea.setValue 'a user disconnected'
-      # socket.emit 'disconnect',
-      #   from: txtname.getValue()
       console.log 'disconnect....'
       panel.setLoading true
 
+    socket.on 'error', (data) ->
+      console.log '---err---'
+      console.log data
 
-    socket.on 'bye', (data) ->
-      txtarea.setValue txtarea.getValue() + '\n' + data.from + ' disconnected.'
 
     socket.on 'message', (data) ->
-      txtarea.setValue txtarea.getValue() + '\n' + data.from + ': ' + data.msg
+      txtarea.add_value "#{data.from} : #{data.msg}"
 
 
     socket.on 'hi', (data) ->
-      txtarea.setValue txtarea.getValue() + '\n' + data.from + ' connected.'
+      txtarea.add_value "#{data.from} : #{data.id} connected."
 
     txtname.on 'specialkey', (textfield, e) ->
       if e.keyCode == Ext.event.Event.ENTER
         socket.emit 'register',
           from: txtname.getValue()
+          id: socket.io.engine.id
+        , (e, socket_id) ->
+          console.log 'connect....'
+          txtarea.add_value "my name: #{txtname.getValue()} my ID: #{socket_id} connected."
+
+    btn_submit.on 'click', ->
+      socket.emit 'register',
+        from: txtname.getValue()
+        id: socket.io.engine.id
+      , (e, socket_id) ->
+        console.log 'connect....'
+        txtarea.add_value "my name: #{txtname.getValue()} my ID: #{socket_id} connected."
+
+    txtmsg.on 'specialkey', (textfield, e) ->
+      if e.keyCode == Ext.event.Event.ENTER
+        msg = txtmsg.getValue()
+        msglist = msg.split ':'
+        if msglist.length == 1
+          textmsg = txtmsg.getValue()
+          socket.emit 'chat message',
+            to: 'all'
+            from: txtname.getValue()
+            msg: textmsg
+
+        else
+          usersto = msglist[0].split ','
+          textmsg = msglist[1]
+
+          socket.emit 'say to someone',
+            to: usersto
+            from: txtname.getValue()
+            msg: textmsg
+        txtarea.add_value "#{txtname.getValue()} : #{textmsg}"
 
     btn_send.on 'click', ->
-      txtarea.setValue txtarea.getValue() + '\n' + txtname.getValue() + ': ' + txtmsg.getValue()
-      socket.emit 'chat message',
-        to: 'all'
-        from: txtname.getValue()
-        msg: txtmsg.getValue()
+
+      msg = txtmsg.getValue()
+      msglist = msg.split ':'
+      if msglist.length == 1
+        textmsg = txtmsg.getValue()
+        socket.emit 'chat message',
+          to: 'all'
+          from: txtname.getValue()
+          msg: textmsg
+      else
+        usersto = msglist[0].split ','
+        textmsg = msglist[1]
+
+        socket.emit 'say to someone',
+          to: usersto
+          from: txtname.getValue()
+          msg: textmsg
+      txtarea.add_value "#{txtname.getValue()} : #{textmsg}"
