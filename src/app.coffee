@@ -6,6 +6,7 @@ io = require('socket.io')(http)
 CoffeeScript = require 'coffee-script'
 fs = require 'fs'
 _ = require 'lodash'
+
 redis = require 'redis'
 rclient = redis.createClient host: 'redis'
 
@@ -42,9 +43,12 @@ io.on 'connection', (client) ->
   redis_socket_client = redis.createClient host: 'redis'
   redis_socket_client.subscribe client.id
 
+
   redis_socket_client.on 'message', (channel, message) ->
     data = JSON.parse(message)
     client.emit 'message', data
+
+
 
   rclient.set 'user:all:connection', 0
 
@@ -99,10 +103,12 @@ io.on 'connection', (client) ->
     ], (e) ->
       console.log data.from + ' : ' + client.id + ' connected.'
 
+
   client.on 'chat message', (data) ->
     jstr = JSON.stringify(data)
     console.log "msg: #{jstr}"
     client.broadcast.emit 'message', data
+
 
 
 

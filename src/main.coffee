@@ -1,4 +1,3 @@
-
 Ext.define 'Main',
   extend: "Main_UI"
   bind: ->
@@ -26,14 +25,8 @@ Ext.define 'Main',
       console.log 'disconnect....'
       panel.setLoading true
 
-    socket.on 'error', (data) ->
-      console.log '---err---'
-      console.log data
-
-
     socket.on 'message', (data) ->
       txtarea.add_value "#{data.from} : #{data.msg}"
-
 
     socket.on 'hi', (data) ->
       txtarea.add_value "#{data.from} : #{data.id} connected."
@@ -65,7 +58,6 @@ Ext.define 'Main',
             to: 'all'
             from: txtname.getValue()
             msg: textmsg
-
         else
           usersto = msglist[0].split ','
           textmsg = msglist[1]
@@ -77,7 +69,6 @@ Ext.define 'Main',
         txtarea.add_value "#{txtname.getValue()} : #{textmsg}"
 
     btn_send.on 'click', ->
-
       msg = txtmsg.getValue()
       msglist = msg.split ':'
       if msglist.length == 1
@@ -89,7 +80,6 @@ Ext.define 'Main',
       else
         usersto = msglist[0].split ','
         textmsg = msglist[1]
-
         socket.emit 'say to someone',
           to: usersto
           from: txtname.getValue()
